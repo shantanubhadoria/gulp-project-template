@@ -3,7 +3,7 @@
 var gulp = require('gulp');
 
 gulp.paths = {
-	html: 'src/*.html',
+	html: 'src/index.html',
 	distDev: 'dist.dev',
 	distProd: 'dist.prod',
   scripts: 'scripts',
