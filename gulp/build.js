@@ -20,6 +20,10 @@ pipes.vendorScripts = function() {
   .pipe(plugins.order(['jquery.js', 'angular.js']));
 };
 
+pipes.vendorStyles = function() {
+  plugins.util.log('pipe vendorStyles');
+};
+
 pipes.builtVendorScriptsDev = function() {
   plugins.util.log('pipe builtVendorScriptsDev');
   return pipes.vendorScripts()
@@ -36,7 +40,7 @@ pipes.builtVendorScriptsProd = function() {
 
 pipes.builtVendorStylesDev = function() {
   plugins.util.log('pipe builtVendorStylesDev');
-  return ;
+  return;
 };
 
 // Validate HTML Files
