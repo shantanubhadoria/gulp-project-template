@@ -20,9 +20,24 @@ pipes.vendorScripts = function() {
   .pipe(plugins.order(['jquery.js', 'angular.js']));
 };
 
+// Build vendor less
 pipes.vendorStyles = function() {
   plugins.util.log('pipe vendorStyles');
+  return gulp.src('src/app/vendor.less')
+  .pipe(plugins.less())
+  .pipe(plugins.autoprefixer())
+  .on('error', function handleError(err) {
+    console.error(err.toString());
+    this.emit('end');
+  });
 };
+
+// minified names
+pipes.minifiedFileName = function() {
+  return plugins.rename(function(path){
+    path.extname = '.min' + path.extname
+  })
+}
 
 pipes.builtVendorScriptsDev = function() {
   plugins.util.log('pipe builtVendorScriptsDev');
@@ -38,9 +53,34 @@ pipes.builtVendorScriptsProd = function() {
   .pipe(gulp.dest(paths.distProd + '/' + paths.scripts));
 };
 
+// Deploy vendor css to dev folder
 pipes.builtVendorStylesDev = function() {
   plugins.util.log('pipe builtVendorStylesDev');
-  return;
+  return gulp.src('src/app/vendor.less')
+  .pipe(plugins.less())
+  .pipe(plugins.autoprefixer())
+  .on('error', function handleError(err) {
+    console.error(err.toString());
+    this.emit('end');
+  })
+  .pipe(gulp.dest(paths.distDev + '/' + paths.styles));
+};
+
+// Deploy vendor css to prod folder
+pipes.builtVendorStylesProd = function() {
+  plugins.util.log('pipe builtVendorStylesProd');
+  return gulp.src('src/app/vendor.less')
+  .pipe(plugins.sourcemaps.init())
+  .pipe(plugins.less())
+  .pipe(plugins.autoprefixer())
+  .on('error', function handleError(err) {
+    console.error(err.toString());
+    this.emit('end');
+  })
+  .pipe(plugins.minifyCss())
+  .pipe(plugins.sourcemaps.write())
+  .pipe(pipes.minifiedFileName())
+  .pipe(gulp.dest(paths.distProd + '/' + paths.styles));
 };
 
 // Validate HTML Files
@@ -57,6 +97,7 @@ pipes.injectDev = function() {
   return pipes.validatedHTML()
   .pipe(gulp.dest(paths.distDev))
   .pipe(plugins.inject(pipes.builtVendorScriptsDev(),{relative: true, name: 'bower'})) // Inject Vendor Scripts
+  .pipe(plugins.inject(pipes.builtVendorStylesDev(),{relative: true, name: 'bower'})) // Inject Vendor Styles
   .pipe(gulp.dest(paths.distDev));
 };
 
@@ -65,6 +106,7 @@ pipes.injectProd = function() {
   return pipes.validatedHTML()
   .pipe(gulp.dest(paths.distProd))
   .pipe(plugins.inject(pipes.builtVendorScriptsProd(),{relative: true, name: 'bower'})) // Inject Vendor Scripts
+  .pipe(plugins.inject(pipes.builtVendorStylesProd(),{relative: true, name: 'bower'})) // Inject Vendor Styles
   .pipe(gulp.dest(paths.distProd));
 };
 

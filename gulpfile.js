@@ -7,6 +7,7 @@ gulp.paths = {
 	distDev: 'dist.dev',
 	distProd: 'dist.prod',
   scripts: 'scripts',
+  styles: 'styles',
 	tmp: '.tmp'
 };
 
